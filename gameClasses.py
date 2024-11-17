@@ -1,9 +1,3 @@
-"""
-Spielfeld:
-    -> 6 x 7
-    -> Funktion um Stein zu legen
-"""
-
 class playingField():
     def __init__(self,height:int = 6,width:int = 7):
         self.height = height
@@ -14,7 +8,7 @@ class playingField():
         for i in range(self.height):
             row = list()
             for j in range(self.width):
-                row.append("X")
+                row.append("_")
             self.area.append(row)
 
     def showField(self):
@@ -32,7 +26,7 @@ class playingField():
 
     def setStone(self,colNbr:int,color:str):
         for row in range(self.height - 1,-1,-1):
-            if self.area[row][colNbr-1] == "X":
+            if self.area[row][colNbr-1] == "_":
                 self.area[row][colNbr-1] = color
                 break
     
@@ -42,7 +36,7 @@ class playingField():
             for col in range(self.width-1):
                 currentStone = self.area[row][col]
                 nextStone = self.area[row][col+1]
-                if currentStone == nextStone and currentStone != "X":
+                if currentStone == nextStone and currentStone != "_":
                     counter += 1
                 else:
                     counter = 0
@@ -58,7 +52,7 @@ class playingField():
             for row in range(self.height-1):
                 currentStone = self.area[row][col]
                 nextStone = self.area[row+1][col]
-                if currentStone == nextStone and currentStone != "X":
+                if currentStone == nextStone and currentStone != "_":
                     counter += 1
                 else:
                     counter = 0
@@ -67,20 +61,41 @@ class playingField():
                     return True
         return False
 
-    def checkDiago(self):
-        pass
-
+    def checkDiago(self) -> bool:
+        for row in range(self.height-3):
+            for col in range(self.width-3):
+                stones = list()
+                for i in range(4):
+                    stones.append(self.area[row+i][col+i])
+                if "".join(stones) == "YYYY" or "".join(stones) == "RRRR":
+                    print(f"{stones[0]} wins")
+                    return True
+        for row in range(self.height-3):
+            for col in range(self.width-1,2,-1):
+                stones = list()
+                for i in range(4):
+                    stones.append(self.area[row+i][col-i])
+                if "".join(stones) == "YYYY" or "".join(stones) == "RRRR":
+                    print(f"{stones[0]} wins")
+                    return True
+        return False
+    
 field = playingField()
 field.createEmptyField()
 field.showField()
 
 
 isOver = False
+run = 0
 while not isOver:
-    newStoneCol = int(input(f"It is Red's turn. Please type a value between 1 and {field.width}: "))
-    field.setStone(newStoneCol,'R')
+    run += 1
+    player = ["Red","R"] if run%2 != 0 else ["Yellow","Y"]
+    newStoneCol = int(input(f"It is {player[0]}'s turn. Please type a value between 1 and {field.width}: "))
+    if newStoneCol == 0:
+        break
+    field.setStone(newStoneCol,player[1])
     field.showField()
-    isOver = field.checkHorizonzal() or field.checkVertical()
+    isOver = field.checkHorizonzal() or field.checkVertical() or field.checkDiago()
 
 
 
