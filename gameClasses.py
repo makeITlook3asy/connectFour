@@ -3,6 +3,7 @@ class playingField():
         self.height = height
         self.width = width
         self.area = list()
+        self.stop = False
 
     def createEmptyField(self):
         for i in range(self.height):
@@ -24,11 +25,22 @@ class playingField():
         print(" ")
 
 
-    def setStone(self,colNbr:int,color:str):
-        for row in range(self.height - 1,-1,-1):
-            if self.area[row][colNbr-1] == "_":
-                self.area[row][colNbr-1] = color
-                break
+    def setStone(self,player:str,color:str):
+        try:
+            colNbr = int(input(f"It is {player[0]}'s turn. Please type a value between 1 and {field.width}: "))
+            if colNbr == 0:
+                self.stop = True
+                return
+            for row in range(self.height - 1,-1,-1):
+                if self.area[row][colNbr-1] == "_":
+                    self.area[row][colNbr-1] = color
+                    break
+        except IndexError as ind_error:
+            print(f"Your input is out of range!\nPlease select a number between 1 and {self.width}")
+            self.setStone(player,color)
+        except ValueError:
+            print(f"Your input has the wrong type!\nPlease type in a NUMBER between 1 and {self.width} ")
+            self.setStone(player,color)
     
     def checkHorizonzal(self)->bool:
         for row in range(self.height):
@@ -90,12 +102,9 @@ run = 0
 while not isOver:
     run += 1
     player = ["Red","R"] if run%2 != 0 else ["Yellow","Y"]
-    newStoneCol = int(input(f"It is {player[0]}'s turn. Please type a value between 1 and {field.width}: "))
-    if newStoneCol == 0:
-        break
-    field.setStone(newStoneCol,player[1])
+    field.setStone(player[0],player[1])
     field.showField()
-    isOver = field.checkHorizonzal() or field.checkVertical() or field.checkDiago()
+    isOver = field.checkHorizonzal() or field.checkVertical() or field.checkDiago() or field.stop
 
 
 
